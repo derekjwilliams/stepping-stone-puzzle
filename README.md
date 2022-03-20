@@ -27,7 +27,7 @@ Bonus points, in no order:
 
 ### State
 
-Manange the state of the game, should include easy ability to UNDO and the ability to read a previous game.
+Manange the state of the game, should include easy ability to undo and the ability to read a previous game.
 
 Will likely start with [Recoil](https://recoiljs.org) since it seems to provide what we need.  However, [XState](https://xstate.js.org) definitely has some strengths, including the fact that it uses the [SCXML notation](https://www.w3.org/TR/scxml/).  It may be worth doing a version of each to compare and contrast the developer experience.
 
