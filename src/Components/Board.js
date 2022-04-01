@@ -5,7 +5,6 @@ function Board(props) {
   const style = {
     display: 'grid',
     margin: '0 auto',
-    display: 'grid',
     gridGap: 0,
     gridTemplateColumns: `repeat(${props.size}, ${500/props.size}px)`,
     gridTemplateRows: `repeat(${props.size}, ${500/props.size}px) ${500/props.size}px`,
