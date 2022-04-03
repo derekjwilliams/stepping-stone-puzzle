@@ -32,3 +32,9 @@ Manange the state of the game, should include easy ability to undo and the abili
 Will likely start with [Recoil](https://recoiljs.org) since it seems to provide what we need.  However, [XState](https://xstate.js.org) definitely has some strengths, including the fact that it uses the [SCXML notation](https://www.w3.org/TR/scxml/).  It may be worth doing a version of each to compare and contrast the developer experience.
 
 For now we will use D3 and Recoil, if these don't easily provide the functionality needed then we may switch gears.
+
+## Notes
+
+[Flow](https://flow.org/en/docs/) is optional, feel free to add types to clarify code
+
+Feel free to use [ESDoc](https://jsdoc.app/) tags if desired

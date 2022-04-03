@@ -21,7 +21,10 @@
     "rules": {
         "react/react-in-jsx-scope": 0,
         "react/prop-types": "off",
-        "complexity": ["error", 5]
+        "complexity": ["error", 5],
+        "no-debugger": 0,
+        "no-unused-vars": 0
+        // ,"semi": 2
     },
     "settings": {
         "react": {
