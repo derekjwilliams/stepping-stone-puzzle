@@ -7,6 +7,7 @@
 export function GamePosition(kind = 'empty', coordinates = [0,0]) {
   this.kind = kind;
   this.coordinates = coordinates;
+  this.value = 0;
 }
 /**
  * 

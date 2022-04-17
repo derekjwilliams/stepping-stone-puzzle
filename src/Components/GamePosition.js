@@ -1,6 +1,6 @@
-function GameSquare({row, column, onChildClick}) {
+function GamePosition({row, column, onPositionClick}) {
   function handleClick() {
-    onChildClick(row, column);
+    onPositionClick(column, row);
   }
 
   const style = {
@@ -11,4 +11,4 @@ function GameSquare({row, column, onChildClick}) {
   return <div className="game-board__square" style={style} onClick={handleClick}></div>;
 }
 
-export default GameSquare;
+export default GamePosition;
