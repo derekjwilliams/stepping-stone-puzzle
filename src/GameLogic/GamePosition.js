@@ -1,30 +1,32 @@
-/** 
- * Represents an infinite stepping stone game, @see {@link https://www.youtube.com/watch?v=m4Uth-EaTZ8}
- */
-// @flow
-// {kind: string}
-// {coordinates: Array<number>}
-export function GamePosition(kind = 'empty', coordinates = [0,0]) {
+import { Game } from "./Game";
+
+export function GamePosition(kind = EmptyPosition, coordinates = [0, 0], game) {
   this.kind = kind;
   this.coordinates = coordinates;
-  this.value = 0;
+  this.pieceValue = 0;
+  this.game = game;
 }
-/**
- * 
- * @returns string representation of the object for debugging
- */
-GamePosition.prototype.info = function() {
-  return `kind: ${this.kind}, coordinates: ${this.coordinates}`;
+
+GamePosition.prototype.addHut = function () {
+  if (this.kind === EmptyPosition) {
+    this.kind = Hut;
+    this.pieceValue = 1;
+  }
 };
 
-//TODO add separate prototypes for hut and step
-GamePosition.prototype.addHut = function() {
-  this.kind = 'hut';
-  this.value = 1;
+GamePosition.prototype.addStep = function (stepValue) {
+  if (this.kind === EmptyPosition) {
+    const neigborsSum = this.game.getNeighborsSum(this);
+    if (stepValue === neigborsSum) {
+      this.kind = Step;
+      this.pieceValue = stepValue;
+      return true
+    }
+    return false;
+  }
+  return false;
 };
 
-GamePosition.prototype.addStep = function(stepValue) {
-  //TODO check to see if valid, e.g. the math works: not occupied and stepValue is the sum of all neighbors
-  this.kind = 'step';
-  this.value = stepValue;
-};
+export const EmptyPosition = 'empty';
+export const Hut = 'hut';
+export const Step = 'step';
