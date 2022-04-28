@@ -14,6 +14,7 @@ function Board({size, hutLimit}) {
     margin: '0.5em',
     gridTemplateColumns: `repeat(${size}, 1fr)`,
     gridTemplateRows: `repeat(${size}, 1fr)`,
+    fontSize: 'calc(2vmin)'
   };
 
   const [game, setGame] = useState(new Game({ size, hutLimit }) );
