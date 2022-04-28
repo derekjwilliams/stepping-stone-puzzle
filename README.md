@@ -39,9 +39,9 @@ For now we will use D3 and Recoil, if these don't easily provide the functionali
 
 Feel free to use [ESDoc](https://jsdoc.app/) tags if desired
 
-## Code Documentation
+# Code Documentation
 
-Generated using jsdoc-to-markdown
+*Note: Generated using jsdoc-to-markdown*
 
 <a name="Game"></a>
 
@@ -112,5 +112,43 @@ Place the piece if possible, returns false if a piece cannot be placed, the type
 ### game.getInfo() ⇒ <code>string</code>
 **Kind**: instance method of [<code>Game</code>](#Game)  
 **Returns**: <code>string</code> - String representing information about the game
+
+<a name="GamePosition"></a>
+
+## GamePosition(row, column, game)
+Represents a Game Position in an infinite stepping stone game, @see [https://www.youtube.com/watch?v=m4Uth-EaTZ8](https://www.youtube.com/watch?v=m4Uth-EaTZ8)
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| row | <code>number</code> |  |
+| column | <code>number</code> |  |
+| game | <code>Game</code> | the game that contains this position |
+
+
+* [GamePosition(row, column, game)](#GamePosition)
+    * [.placeHut()](#GamePosition+placeHut) ⇒ <code>boolean</code>
+    * [.placeStep(value)](#GamePosition+placeStep) ⇒ <code>boolean</code>
+
+<a name="GamePosition+placeHut"></a>
+
+### gamePosition.placeHut() ⇒ <code>boolean</code>
+place a Hut if possible
+
+**Kind**: instance method of [<code>GamePosition</code>](#GamePosition)  
+**Returns**: <code>boolean</code> - true if hut was placed  
+<a name="GamePosition+placeStep"></a>
+
+### gamePosition.placeStep(value) ⇒ <code>boolean</code>
+place a Step if possible
+
+**Kind**: instance method of [<code>GamePosition</code>](#GamePosition)  
+**Returns**: <code>boolean</code> - true if step was placed  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>number</code> | value of the step |
+
 
 
