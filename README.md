@@ -38,3 +38,79 @@ For now we will use D3 and Recoil, if these don't easily provide the functionali
 [Flow](https://flow.org/en/docs/) is optional, feel free to add types to clarify code
 
 Feel free to use [ESDoc](https://jsdoc.app/) tags if desired
+
+## Code Documentation
+
+Generated using jsdoc-to-markdown
+
+<a name="Game"></a>
+
+## Game(params)
+Represents an infinite stepping stone game, @see [https://www.youtube.com/watch?v=m4Uth-EaTZ8](https://www.youtube.com/watch?v=m4Uth-EaTZ8)
+
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| params | <code>object</code> | 
+| params.size | <code>number</code> | 
+| params.hutLimit | <code>number</code> |  
+
+
+* [Game(arrayIndices)](#Game)
+    * [.getNeighbors(position)](#Game+getNeighbors) ⇒ <code>array</code>
+    * [.getNeighborsSum(position)](#Game+getNeighborsSum) ⇒ <code>number</code>
+    * [.getHutCount()](#Game+getHutCount) ⇒ <code>number</code>
+    * [.placePiece(arrayIndices)](#Game+placePiece) ⇒ <code>boolean</code> \| <code>string</code>
+    * [.getInfo()](#Game+getInfo) ⇒ <code>string</code>
+
+<a name="Game+getNeighbors"></a>
+
+### game.getNeighbors(position) ⇒ <code>array</code>
+Get all neighbors on the board, typically 8.  In the case of positions on the edge of the board a null
+is returned for that position, because there are no positions beyoud the edge of the board
+
+**Kind**: instance method of [<code>Game</code>](#Game)  
+**Returns**: <code>array</code> - all Neigbors on the board in order topleft, top, topright, right, bottomright, bottom, bottomleft, left; null if not present  
+
+| Param | Type |
+| --- | --- |
+| position | <code>GamePosition</code> | 
+
+<a name="Game+getNeighborsSum"></a>
+
+### game.getNeighborsSum(position) ⇒ <code>number</code>
+Get the sum of all of the neighbor's piece values
+
+**Kind**: instance method of [<code>Game</code>](#Game)  
+**Returns**: <code>number</code> - the sum of all of the neighbor's piece values  
+
+| Param | Type |
+| --- | --- |
+| position | <code>GamePosition</code> | 
+
+<a name="Game+getHutCount"></a>
+
+### game.getHutCount() ⇒ <code>number</code>
+**Kind**: instance method of [<code>Game</code>](#Game)  
+**Returns**: <code>number</code> - Number of postions that have huts  
+<a name="Game+placePiece"></a>
+
+### game.placePiece(arrayIndices) ⇒ <code>boolean</code> \| <code>string</code>
+Place the piece if possible, returns false if a piece cannot be placed, the type of piece if it can be placed
+
+**Kind**: instance method of [<code>Game</code>](#Game)  
+
+| Param | Type |
+| --- | --- |
+| arrayIndices | <code>object</code> | 
+| arrayIndices.row | <code>number</code> | 
+| arrayIndices.column | <code>number</code> | 
+
+<a name="Game+getInfo"></a>
+
+### game.getInfo() ⇒ <code>string</code>
+**Kind**: instance method of [<code>Game</code>](#Game)  
+**Returns**: <code>string</code> - String representing information about the game
+
+

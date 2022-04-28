@@ -4,7 +4,9 @@ import { GamePosition, Empty, Hut } from "./GamePosition";
  *
  * Represents an infinite stepping stone game, @see {@link https://www.youtube.com/watch?v=m4Uth-EaTZ8}
  *
- * @param {number, number}
+ * @param {object} params
+ * @param {number} params.size
+ * @param {number} params.hutLimit
  */
 export function Game({ size = 21, hutLimit = 2 }) {
   size = size % 2 === 0 ? size + 1 : size;
@@ -50,7 +52,7 @@ Game.prototype.getNeighborsSum = function (position) {
 }
 
 /**
- * @returns Number of postions that have huts
+ * @returns {number} Number of postions that have huts
  */
 Game.prototype.getHutCount = function () {
   return this.gamePositions.flat().filter(p => p.kind === Hut).length
@@ -77,7 +79,7 @@ Game.prototype.placePiece = function ({row, column}) {
 }
 
 /**
- * @returns String representing information about the game
+ * @returns {string} String representing information about the game
  */
 Game.prototype.getInfo = function () {
   return `Size: ${this.gamePositions.length}, Huts: ${this.getHutCount()} placed out of ${this.hutLimit}`;
