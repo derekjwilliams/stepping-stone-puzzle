@@ -1,4 +1,4 @@
-const BoardPosition = ({ kind, pieceValue, row, column, handleClick }) => {
+const BoardPosition = ({kind, pieceValue, row, column, handleClick }) => {
   const stlyes = {
   empty : {
     backgroundColor: '#498589',

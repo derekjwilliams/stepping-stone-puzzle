@@ -18,12 +18,19 @@ function Board({size, hutLimit}) {
 
   const [game, setGame] = useState(new Game({ size, hutLimit }) );
 
-  game.gamePositions[(size - 1)/2][(size - 1)/2].addHut();
+  game.gamePositions[(size - 1)/2][(size - 1)/2].placeHut();
 
+  /**
+   * Click handler, place the piece if possible
+   * @param {object} arrayIndices
+   * @param {number} arrayIndices.row
+   * @param {number} arrayIndices.column
+   */
   function handlePositionClicked({row, column}) {
-    game.placePiece({row, column});
-    const nextGame = _.cloneDeep(game)
-    setGame(nextGame)
+    if (game.placePiece({row, column})) {
+      const nextGame = _.cloneDeep(game);
+      setGame(nextGame);
+    }
   }
 
   return <div>

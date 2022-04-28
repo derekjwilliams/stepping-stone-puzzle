@@ -1,3 +1,10 @@
+
+/**
+ * Represents a Game Position in an infinite stepping stone game, @see {@link https://www.youtube.com/watch?v=m4Uth-EaTZ8}
+ * @param {number} row 
+ * @param {number} column 
+ * @param {Game} game the game that contains this position
+ */
 export function GamePosition(row, column, game) {
   this.kind = Empty;
   this.row = row;
@@ -6,20 +13,32 @@ export function GamePosition(row, column, game) {
   this.game = game;
 }
 
-GamePosition.prototype.addHut = function () {
-  if (this.kind === Empty) {
+/**
+ * place a Hut if possible
+ * @returns {boolean} true if hut was placed
+ */
+GamePosition.prototype.placeHut = function () {
+  const hutCount = this.game.getHutCount();
+  if (hutCount <  this.game.hutLimit && this.kind === Empty) {
     this.kind = Hut;
     this.pieceValue = 1;
+    return true;
   }
+  return false;
 };
 
-GamePosition.prototype.addStep = function (stepValue) {
+/**
+ * place a Step if possible
+ * @param {number} value value of the step
+ * @returns {boolean} true if step was placed
+ */
+GamePosition.prototype.placeStep = function (value) {
   if (this.kind === Empty) {
     const neigborsSum = this.game.getNeighborsSum(this);
-    if (stepValue === neigborsSum) {
+    if (value === neigborsSum) {
       this.kind = Step;
-      this.pieceValue = stepValue;
-      return true
+      this.pieceValue = value;
+      return true;
     }
     return false;
   }
@@ -28,4 +47,4 @@ GamePosition.prototype.addStep = function (stepValue) {
 
 export const Empty = 'empty';
 export const Hut = 'hut';
-export const Step = 'step';
+const Step = 'step';
