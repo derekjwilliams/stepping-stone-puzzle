@@ -1,9 +1,8 @@
-import { GamePosition, EmptyPosition, Hut, Step } from "./GamePosition";
+import { GamePosition, Empty, Hut } from "./GamePosition";
 
 /** 
  * Represents an infinite stepping stone game, @see {@link https://www.youtube.com/watch?v=m4Uth-EaTZ8}
  */
-
 export function Game({ size = 21, hutLimit = 2 }) {
   size = size % 2 === 0 ? size + 1 : size;
   this.hutLimit = hutLimit;
@@ -11,7 +10,7 @@ export function Game({ size = 21, hutLimit = 2 }) {
 
   this.gamePositions = [...new Array(size)].map(() => [...new Array(size)]).map((row, i, a) =>
     row.map((position, j) =>
-      (new GamePosition(EmptyPosition, [j - (size - 1) / 2, - (i - (size - 1) / 2)], this))
+      (new GamePosition(i, j, this))
     )
   );
 }
@@ -19,8 +18,8 @@ export function Game({ size = 21, hutLimit = 2 }) {
 //TODO memoize, see memoize-one library
 Game.prototype.getNeighbors = function (position) {
   const size = this.gamePositions.length;// assumes square game
-  const row = (this.gamePositions.length - 1) / 2 - position.coordinates[1];
-  const column = (this.gamePositions.length - 1) / 2 + position.coordinates[0];
+  const row = position.row;
+  const column = position.column;
 
   //topleft, top, topright, right, bottomright, bottom, bottomleft, left
   return [row > 0 && column > 0 ? this.gamePositions[row - 1][column - 1] : null,
@@ -44,14 +43,16 @@ Game.prototype.getHutCount = function () {
   return this.gamePositions.flat().filter(p => p.kind === Hut).length
 }
 
-Game.prototype.placePiece = function (x, y) {
-  // console.log(x, y)
-  const row = (this.gamePositions.length - 1) / 2 - y;
-  const column = (this.gamePositions.length - 1) / 2 + x;
+Game.prototype.placePiece = function (row, column) {
   const position = this.gamePositions[row][column]
   const hutCount = this.getHutCount();
-  if (hutCount < this.hutLimit) {
-      position.addHut();
+  if (hutCount <  this.hutLimit) {
+    position.addHut();
+  }
+  else {
+    if (position.addStep(this.stepValue)) {
+      this.stepValue = this.stepValue + 1;
+    }
   }
 }
 

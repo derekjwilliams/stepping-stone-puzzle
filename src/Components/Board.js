@@ -1,4 +1,4 @@
-import GamePosition from './GamePosition';
+import BoardPosition from './BoardPosition';
 import { Game } from '../GameLogic/Game';
 import React, { useState} from 'react';
 import _ from 'lodash';
@@ -22,19 +22,8 @@ function Board({size, hutLimit}) {
 
   game.gamePositions[(size - 1)/2][(size - 1)/2].addHut();
 
-  function handlePositionClicked(x, y) {
-    const row = (game.gamePositions.length - 1)/2 - y;
-    const column = (game.gamePositions.length - 1)/2 + x;
-    const position = game.gamePositions[row][column]
-    const hutCount = game.getHutCount();
-    if (hutCount <  game.hutLimit) {
-      position.addHut();
-    }
-    else {
-      if (position.addStep(game.stepValue)) {
-        game.stepValue = game.stepValue + 1;
-      }
-    }
+  function handlePositionClicked(row, column) {
+    game.placePiece(row, column);
     const nextGame = _.cloneDeep(game)
     setGame(nextGame)
   }
@@ -43,11 +32,11 @@ function Board({size, hutLimit}) {
     <div style={style}>
     {game.gamePositions.map((row, i) =>
       row.map((square, j) => {
-        return <GamePosition pieceValue={square.pieceValue} 
+        return <BoardPosition pieceValue={square.pieceValue} 
                              kind={square.kind} 
-                             row={- (i - (size - 1) / 2)} 
-                             column={j - (size - 1) / 2} key={'' + i * 10 + j} 
-                             handleClick={handlePositionClicked}></GamePosition>
+                             row={i} 
+                             column={j} key={'' + i * 10 + j} 
+                             handleClick={handlePositionClicked}></BoardPosition>
       })
     )
     }
