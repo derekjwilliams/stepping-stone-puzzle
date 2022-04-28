@@ -3,10 +3,8 @@ const BoardPosition = ({ kind, pieceValue, row, column, handleClick }) => {
   empty : {
     backgroundColor: '#498589',
     border: '1px solid white',
-
   },
   hut : {
-    margin: '0.1em',
     backgroundColor: '#aa7070',
     borderRadius: '50%',
     border: '1px solid white',
@@ -14,16 +12,17 @@ const BoardPosition = ({ kind, pieceValue, row, column, handleClick }) => {
     placeItems: 'center'
   },
   step : {
-    margin: '0.1em',
     backgroundColor: '#ccc',
+    border: '1px solid white',
     borderRadius: '50%',
     display: 'grid',
     placeItems: 'center'
   }
 }
 
-  return <div className="game-board__square" style={stlyes[kind]} onClick={() => handleClick(row, column)}>
-    <div>{pieceValue !== 0? pieceValue : ''}</div></div>;
+  return <div className="game-board__square" style={stlyes[kind]} onClick={() => handleClick({row, column})}>
+           <div>{pieceValue !== 0? pieceValue : ''}</div>
+         </div>;
 }
 
 

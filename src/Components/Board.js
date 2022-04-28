@@ -5,25 +5,23 @@ import _ from 'lodash';
 
 function Board({size, hutLimit}) {
   const boardVisualizationSize = 1000;
-  // layout the css grid according to size, size is always odd so that the center is always 0,0 and the maximum X and Y value is always (size-1)/2
-  // So for a size of 11 the maximum X and Y is 5 and 5, and the minimum X and Y is -5, -5.
+  // layout the css grid according to size, size is always odd, the maximum row and column value is always (size-1)
+  // So for a size of 11 the maximum row and colum is 10 and 10, and the minimum row and column is 0, 0.
   const style = {
     display: 'grid',
-    margin: '0px',
-    width: '90vh',
-    height: '90vh',
-    gridGap: '1px',
+    width: 'calc(100vmin - 1em)',
+    height: 'calc(100vmin - 1em)',
+    margin: '0.5em',
     gridTemplateColumns: `repeat(${size}, 1fr)`,
-    gridTemplateRows: `repeat(${size}, 1fr`,
-    padding: '1.5em'
+    gridTemplateRows: `repeat(${size}, 1fr)`,
   };
 
   const [game, setGame] = useState(new Game({ size, hutLimit }) );
 
   game.gamePositions[(size - 1)/2][(size - 1)/2].addHut();
 
-  function handlePositionClicked(row, column) {
-    game.placePiece(row, column);
+  function handlePositionClicked({row, column}) {
+    game.placePiece({row, column});
     const nextGame = _.cloneDeep(game)
     setGame(nextGame)
   }
