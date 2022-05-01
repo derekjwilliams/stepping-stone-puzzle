@@ -1,29 +1,35 @@
 
 /**
  * Represents a Game Position in an infinite stepping stone game, @see {@link https://www.youtube.com/watch?v=m4Uth-EaTZ8}
- * @param {number} row 
- * @param {number} column 
+ * @param {number} y 
+ * @param {number} x 
  * @param {Game} game the game that contains this position
  */
-export function GamePosition(row, column, game) {
+export function GamePosition(y, x, game) {
   this.kind = Empty;
-  this.row = row;
-  this.column = column;
+  this.y = y;
+  this.x = x;
   this.pieceValue = 0;
   this.game = game;
 }
 
 /**
- * place a Hut if possible
+ * place a Hut if possible, if this is already a hut then remove it
  * @returns {boolean} true if hut was placed
  */
 GamePosition.prototype.placeHut = function () {
   const hutCount = this.game.getHutCount();
-  if (hutCount <  this.game.hutLimit && this.kind === Empty) {
-    this.kind = Hut;
-    this.pieceValue = 1;
+  if (hutCount < this.game.hutLimit && this.kind === Empty) {
+      this.kind = Hut;
+      this.pieceValue = 1;
+      return true;
+  }
+  else if (hutCount <= this.game.hutLimit && this.kind === Hut) {
+    this.kind = Empty;
+    this.pieceValue = 0;
     return true;
   }
+
   return false;
 };
 
@@ -38,9 +44,18 @@ GamePosition.prototype.placeStep = function (value) {
     if (value === neigborsSum) {
       this.kind = Step;
       this.pieceValue = value;
+      this.game.stepValue++;
       return true;
     }
     return false;
+  }
+  else if (this.kind === Step) { // remove last step
+    if (this.pieceValue === this.game.stepValue - 1) {
+      this.kind = Empty;
+      this.pieceValue = 0;
+      this.game.stepValue--;
+      return true;
+    }
   }
   return false;
 };

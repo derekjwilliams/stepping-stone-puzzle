@@ -9,12 +9,12 @@ import { GamePosition, Empty, Hut } from "./GamePosition";
  * @param {number} params.hutLimit
  */
 export function Game({ size = 21, hutLimit = 2 }) {
-  size = size % 2 === 0 ? size + 1 : size;
   this.hutLimit = hutLimit;
   this.stepValue = 2;
 
+  // Don't worry be happy, this creates a 2d array
   this.gamePositions = [...new Array(size)].map(() => [...new Array(size)]).map((row, i, a) =>
-    row.map((position, j) =>
+    row.map((_, j) =>
       (new GamePosition(i, j, this))
     )
   );
@@ -24,22 +24,22 @@ export function Game({ size = 21, hutLimit = 2 }) {
  * Get all neighbors on the board, typically 8.  In the case of positions on the edge of the board a null
  * is returned for that position, because there are no positions beyoud the edge of the board
  * @param {GamePosition} position 
- * @returns {array} all Neigbors on the board in order topleft, top, topright, right, bottomright, bottom, bottomleft, left; null if not present
+ * @returns {array} all Neigbors on the board in order: topleft, top, topright, right, bottomright, bottom, bottomleft, left; null if not present
  */
 Game.prototype.getNeighbors = function (position) {
   const size = this.gamePositions.length;// assumes square game
-  const row = position.row;
-  const column = position.column;
+  const x = position.x;
+  const y = position.y;
 
   //Order in array: topleft, top, topright, right, bottomright, bottom, bottomleft, left
-  return [row > 0 && column > 0 ? this.gamePositions[row - 1][column - 1] : null,
-    row > 0 ? this.gamePositions[row - 1][column] : null,
-    row > 0 && column <= size ? this.gamePositions[row - 1][column + 1] : null,
-    column <= size ? this.gamePositions[row][column + 1] : null,
-    row <= size && column <= size ? this.gamePositions[row + 1][column + 1] : null,
-    row <= size ? this.gamePositions[row + 1][column] : null,
-    row <= size && column > 0 ? this.gamePositions[row + 1][column - 1] : null,
-    column > 0 ? this.gamePositions[row][column - 1] : null]
+  return [y > 0 && x > 0 ? this.gamePositions[y - 1][x - 1] : null,
+    y > 0 ? this.gamePositions[y - 1][x] : null,
+    y > 0 && x < size -1 ? this.gamePositions[y - 1][x + 1] : null,
+    x < size - 1 ? this.gamePositions[y][x + 1] : null,
+    y < size - 1 && x < size -1 ? this.gamePositions[y + 1][x + 1] : null,
+    y < size - 1 ? this.gamePositions[y + 1][x] : null,
+    y < size - 1 && x > 0 ? this.gamePositions[y + 1][x - 1] : null,
+    x > 0 ? this.gamePositions[y][x - 1] : null]
 }
 
 /**
@@ -48,32 +48,33 @@ Game.prototype.getNeighbors = function (position) {
  * @returns {number} the sum of all of the neighbor's piece values
  */
 Game.prototype.getNeighborsSum = function (position) {
-  return this.getNeighbors(position).filter(value => value != null).map(n => n.pieceValue).reduce((p, v) => p + v, 0);  
+  return this.getNeighbors(position).filter(value => value != null)
+                                    .map(n => n.pieceValue)
+                                    .reduce((p, v) => p + v, 0);  
 }
 
+//TODO this will always return hutLimit once all huts have been placed
 /**
- * @returns {number} Number of postions that have huts
+ * @returns {number} Number of positions that have huts
  */
 Game.prototype.getHutCount = function () {
-  return this.gamePositions.flat().filter(p => p.kind === Hut).length
+  return this.gamePositions.flat()
+                           .filter(p => p.kind === Hut).length
 }
 
 /**
  * Place the piece if possible, returns false if a piece cannot be placed, the type of piece if it can be placed
  * @param {object} arrayIndices
- * @param {number} arrayIndices.row
- * @param {number} arrayIndices.column
+ * @param {number} arrayIndices.y
+ * @param {number} arrayIndices.x
  * @returns {(boolean|string)}
  */
-Game.prototype.placePiece = function ({row, column}) {
-  const position = this.gamePositions[row][column]
-  const hutCount = this.getHutCount();
-  if (position.placeHut()) {
+Game.prototype.placePiece = function ({x, y}) {
+  if (this.gamePositions[y][x].placeHut()) {
     return true;
   }
-  if (position.placeStep(this.stepValue)) {
-      this.stepValue++;
-      return true;
+  if (this.gamePositions[y][x].placeStep(this.stepValue)) {
+    return true;
   }
   return false;
 }
@@ -87,4 +88,4 @@ Game.prototype.getInfo = function () {
 
 //TODO: memoize expensive functions as needed, see memoize-one library.  
 // Profile to find the expensive functions first of course, the possible
-// functions that may be expensive are getNeighborsSum and getHutCount
+// functions that may be expensive are getNeighbors and getHutCount
