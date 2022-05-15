@@ -37,7 +37,7 @@ For now we will use D3 and Recoil, if these don't easily provide the functionali
 
 [Flow](https://flow.org/en/docs/) is optional, feel free to add types to clarify code
 
-Feel free to use [ESDoc](https://jsdoc.app/) tags if desired
+Feel free to use [JSDoc](https://jsdoc.app/) tags if desired
 
 # Code Documentation
 
@@ -54,24 +54,24 @@ Represents an infinite stepping stone game, @see [https://www.youtube.com/watch?
 | --- | --- |
 | params | <code>object</code> | 
 | params.size | <code>number</code> | 
-| params.hutLimit | <code>number</code> |  
+| params.hutLimit | <code>number</code> | 
 
 
-* [Game(arrayIndices)](#Game)
-    * [.getNeighbors(position)](#Game+getNeighbors) ⇒ <code>array</code>
-    * [.getNeighborsSum(position)](#Game+getNeighborsSum) ⇒ <code>number</code>
+* [Game(params)](#Game)
+    * [.getNeighborPositions(position)](#Game+getNeighborPositions) ⇒ <code>array</code>
+    * [.getNeighborsSum(size, position)](#Game+getNeighborsSum) ⇒ <code>number</code>
     * [.getHutCount()](#Game+getHutCount) ⇒ <code>number</code>
-    * [.placePiece(arrayIndices)](#Game+placePiece) ⇒ <code>boolean</code> \| <code>string</code>
+    * [.placePiece()](#Game+placePiece) ⇒ <code>boolean</code> \| <code>string</code>
     * [.getInfo()](#Game+getInfo) ⇒ <code>string</code>
 
-<a name="Game+getNeighbors"></a>
+<a name="Game+getNeighborPositions"></a>
 
-### game.getNeighbors(position) ⇒ <code>array</code>
-Get all neighbors on the board, typically 8.  In the case of positions on the edge of the board a null
+### game.getNeighborPositions(position) ⇒ <code>array</code>
+Get all neighbor positions on the board, typically 8.  In the case of positions on the edge of the board a null
 is returned for that position, because there are no positions beyoud the edge of the board
 
 **Kind**: instance method of [<code>Game</code>](#Game)  
-**Returns**: <code>array</code> - all Neigbors on the board in order topleft, top, topright, right, bottomright, bottom, bottomleft, left; null if not present  
+**Returns**: <code>array</code> - all Neigbors on the board in order: top, topright, right, bottomright, bottom, bottomleft, left, topleft; null if not present  
 
 | Param | Type |
 | --- | --- |
@@ -79,33 +79,33 @@ is returned for that position, because there are no positions beyoud the edge of
 
 <a name="Game+getNeighborsSum"></a>
 
-### game.getNeighborsSum(position) ⇒ <code>number</code>
+### game.getNeighborsSum(size, position) ⇒ <code>number</code>
 Get the sum of all of the neighbor's piece values
 
 **Kind**: instance method of [<code>Game</code>](#Game)  
 **Returns**: <code>number</code> - the sum of all of the neighbor's piece values  
 
-| Param | Type |
-| --- | --- |
-| position | <code>GamePosition</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| size | <code>number</code> | board size |
+| position | <code>GamePosition</code> |  |
 
 <a name="Game+getHutCount"></a>
 
 ### game.getHutCount() ⇒ <code>number</code>
 **Kind**: instance method of [<code>Game</code>](#Game)  
-**Returns**: <code>number</code> - Number of postions that have huts  
+**Returns**: <code>number</code> - Number of positions that have huts  
 <a name="Game+placePiece"></a>
 
-### game.placePiece(arrayIndices) ⇒ <code>boolean</code> \| <code>string</code>
+### game.placePiece() ⇒ <code>boolean</code> \| <code>string</code>
 Place the piece if possible, returns false if a piece cannot be placed, the type of piece if it can be placed
 
 **Kind**: instance method of [<code>Game</code>](#Game)  
 
 | Param | Type |
 | --- | --- |
-| arrayIndices | <code>object</code> | 
-| arrayIndices.row | <code>number</code> | 
-| arrayIndices.column | <code>number</code> | 
+| arrayIndices.y | <code>number</code> | 
+| arrayIndices.x | <code>number</code> | 
 
 <a name="Game+getInfo"></a>
 
@@ -135,6 +135,44 @@ Represents a Game Position in an infinite stepping stone game, @see [https://www
 
 ### gamePosition.placeHut() ⇒ <code>boolean</code>
 place a Hut if possible
+
+**Kind**: instance method of [<code>GamePosition</code>](#GamePosition)  
+**Returns**: <code>boolean</code> - true if hut was placed  
+<a name="GamePosition+placeStep"></a>
+
+### gamePosition.placeStep(value) ⇒ <code>boolean</code>
+place a Step if possible
+
+**Kind**: instance method of [<code>GamePosition</code>](#GamePosition)  
+**Returns**: <code>boolean</code> - true if step was placed  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| value | <code>number</code> | value of the step |
+
+<a name="GamePosition"></a>
+
+## GamePosition(params)
+Represents a Game Position in an infinite stepping stone game, @see [https://www.youtube.com/watch?v=m4Uth-EaTZ8](https://www.youtube.com/watch?v=m4Uth-EaTZ8)
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| params | <code>object</code> |  |
+| params.x | <code>number</code> |  |
+| params.y | <code>number</code> |  |
+| params.game | <code>Game</code> | the game that contains this position |
+
+
+* [GamePosition(params)](#GamePosition)
+    * [.placeHut()](#GamePosition+placeHut) ⇒ <code>boolean</code>
+    * [.placeStep(value)](#GamePosition+placeStep) ⇒ <code>boolean</code>
+
+<a name="GamePosition+placeHut"></a>
+
+### gamePosition.placeHut() ⇒ <code>boolean</code>
+place a Hut if possible, if this is already a hut then remove it
 
 **Kind**: instance method of [<code>GamePosition</code>](#GamePosition)  
 **Returns**: <code>boolean</code> - true if hut was placed  
