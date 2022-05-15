@@ -17,8 +17,7 @@ export function GamePosition({x, y, game}) {
  * place a Hut if possible, if this is already a hut then remove it
  * @returns {boolean} true if hut was placed
  */
-GamePosition.prototype.placeHut = function () {
-  const hutCount = this.game.getHutCount();
+GamePosition.prototype.placeHut = function (hutCount = 0) {
   if (hutCount < this.game.hutLimit && this.kind === Empty) {
       this.kind = Hut;
       this.pieceValue = 1;
