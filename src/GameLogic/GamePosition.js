@@ -39,7 +39,7 @@ GamePosition.prototype.placeHut = function (hutCount = 0) {
  */
 GamePosition.prototype.placeStep = function (value) {
   if (this.kind === Empty) {
-    const neigborsSum = this.game.getNeighborsSum(this);
+    const neigborsSum = this.game.memoizedCalculateValue(this);
     if (value === neigborsSum) {
       this.kind = Step;
       this.pieceValue = value;
