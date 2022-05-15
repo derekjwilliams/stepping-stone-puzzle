@@ -34,8 +34,11 @@ export function Game({ size = 21, hutLimit = 2 }) {
 /**
  * Get all neighbor positions on the board, typically 8.  In the case of positions on the edge of the board a null
  * is returned for that position, because there are no positions beyoud the edge of the board
- * @param {GamePosition} position 
- * @returns {array} all Neigbors on the board in order: top, topright, right, bottomright, bottom, bottomleft, left, topleft; null if not present
+ * @param {object} params
+ * @param {number} params.size game size
+ * @param {number} params.x x coordinate
+ * @param {number} params.y y coordinate
+ * @returns {array} all Neigbor coordinates on the board in order: top, topright, right, bottomright, bottom, bottomleft, left, topleft; null if not present
  */
 
 Game.prototype.getNeighborPositions = function ({ size, x, y }) {
@@ -54,7 +57,6 @@ Game.prototype.memoizedGetNeighborPositions = memoizeOne(Game.prototype.getNeigh
 
 /**
  * Get the sum of all of the neighbor's piece values
- * @param {number} size board size
  * @param {GamePosition} position 
  * @returns {number} the sum of all of the neighbor's piece values
  */
@@ -63,13 +65,13 @@ Game.prototype.getNeighborsSum = function (position) {
   return positions.filter(value => value != null)
     .map(c => this.gamePositions[c[0]][c[1]].pieceValue)
     .reduce((p, v) => p + v, 0);
-
 }
 
 /**
  * Place the piece if possible, returns false if a piece cannot be placed, the type of piece if it can be placed
- * @param {number} arrayIndices.y
- * @param {number} arrayIndices.x
+ * @param {object} params
+ * @param {number} params.x x coordinate
+ * @param {number} params.y y coordinate
  * @returns {(boolean|string)}
  */
 Game.prototype.placePiece = function ({ x, y }) {
