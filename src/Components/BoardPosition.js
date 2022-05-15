@@ -1,4 +1,4 @@
-const BoardPosition = ({ kind, pieceValue, y, x, handleClick }) => {
+const BoardPosition = ({ size, kind, pieceValue, y, x, handleClick }) => {
   const stlyes = {
     empty: {
       backgroundColor: '#498589',
@@ -20,7 +20,8 @@ const BoardPosition = ({ kind, pieceValue, y, x, handleClick }) => {
     }
   }
   const valueStyle = {
-    cursor: 'default'
+    cursor: 'default',
+    fontSize: `calc(${50/size}vmin)`
   }
 
   return <div className="game-board__square" style={stlyes[kind]} onClick={() => handleClick({ x, y })}>

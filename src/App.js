@@ -4,13 +4,9 @@ import Board from './Components/Board';
 function App() {
   return (
     <div className="App">
-      <Board size={19} hutLimit={7} handleReset={handleResetClick}></Board>
+      <Board size={19} hutLimit={7}></Board>
     </div>
   );
-
-  function handleResetClick() {
-    console.log('here')
-  }
 }
 
 export default App;

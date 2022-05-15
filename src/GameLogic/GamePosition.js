@@ -1,14 +1,14 @@
-
 /**
  * Represents a Game Position in an infinite stepping stone game, @see {@link https://www.youtube.com/watch?v=m4Uth-EaTZ8}
- * @param {number} y 
- * @param {number} x 
- * @param {Game} game the game that contains this position
+ * @param {object} params
+ * @param {number} params.x
+ * @param {number} params.y 
+ * @param {Game} params.game the game that contains this position
  */
-export function GamePosition(y, x, game) {
+export function GamePosition({x, y, game}) {
   this.kind = Empty;
-  this.y = y;
   this.x = x;
+  this.y = y;
   this.pieceValue = 0;
   this.game = game;
 }

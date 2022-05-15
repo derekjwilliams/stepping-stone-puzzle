@@ -13,8 +13,7 @@ function Board({size, hutLimit}) {
     paddingRight: '-4em',
     margin: '0em 2em 2em 2em',
     gridTemplateColumns: `repeat(${size}, 1fr)`,
-    gridTemplateRows: `repeat(${size}, 1fr)`,
-    fontSize: 'calc(${100/size}vmin)'
+    gridTemplateRows: `repeat(${size}, 1fr)`
   };
   const controlPanelStyle = {
     margin: '10px',
@@ -37,7 +36,6 @@ function Board({size, hutLimit}) {
    */
   function handlePositionClicked({x, y}) {
     if (game.placePiece({x, y})) {
-      
       const nextGame = _.cloneDeep(game);
       setGame(nextGame);
     }
@@ -48,7 +46,7 @@ function Board({size, hutLimit}) {
     newGame.gamePositions[Math.floor((size)/2)][Math.floor((size)/2)].placeHut();
     setGame(newGame);
   }
-  console.log('render position')
+
   return <div>
     <span style={controlPanelStyle} className="control-panel">
       <button style={resetButtonStyle} onClick={() => handleReset()}>New Game</button>
@@ -56,7 +54,8 @@ function Board({size, hutLimit}) {
     <div style={style}>
     {game.gamePositions.map((row, i) =>
       row.map((square, j) => {
-        return <BoardPosition pieceValue={square.pieceValue} 
+        return <BoardPosition size = {size} 
+                             pieceValue={square.pieceValue} 
                              kind={square.kind} 
                              y={i} 
                              x={j} key={'' + i * 10 + j} 
