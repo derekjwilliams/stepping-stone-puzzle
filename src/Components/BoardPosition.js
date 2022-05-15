@@ -17,6 +17,10 @@ const BoardPosition = ({ size, kind, pieceValue, y, x, handleClick }) => {
       borderRadius: '50%',
       display: 'grid',
       placeItems: 'center'
+    },
+    allowedStep: {
+      backgroundColor: '#7eb7bc',
+      border: '1px solid white',
     }
   }
   const valueStyle = {

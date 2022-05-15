@@ -12,17 +12,8 @@ import memoizeOne from 'memoize-one';
 export function Game({ size = 21, hutLimit = 2 }) {
   this.hutLimit = hutLimit;
   this.stepValue = 2;
-
-  /**
-   * @returns {number} Number of positions that have huts
-   * @private
-   */
-  var getHutCount = function (gamePositions) {
-    return gamePositions.flat().filter(p => p.kind === Hut).length
-  }
-
-  this.memoizedGetHutCount = memoizeOne(getHutCount)
-
+  this.hutCount = 0;
+  
   /**
    * Get all neighbor positions on the board, typically 8.  In the case of positions on the edge of the board a null
    * is returned for that position, because there are no positions beyoud the edge of the board
@@ -69,6 +60,16 @@ Game.prototype.calculateValue = function (position) {
 Game.prototype.memoizedCalculateValue = memoizeOne(Game.prototype.calculateValue)
 
 /**
+ * @returns {number} Number of positions that have huts
+ */
+Game.prototype.getHutCount = function () {
+  if (this.hutLimitReached) {
+    return this.hutLimit
+  }
+  return this.gamePositions.flat().filter(p => p.kind === Hut).length
+}
+
+/**
  * Place the piece if possible, returns false if a piece cannot be placed, the type of piece if it can be placed
  * @param {object} params
  * @param {number} params.x x coordinate
@@ -76,8 +77,11 @@ Game.prototype.memoizedCalculateValue = memoizeOne(Game.prototype.calculateValue
  * @returns {(boolean|string)}
  */
 Game.prototype.placePiece = function ({ x, y }) {
-  const hutCount = this.memoizedGetHutCount(this.gamePositions);
-  if (this.gamePositions[y][x].placeHut(hutCount)) {
+  const hutCount = this.getHutCount();
+  
+  const newHutCount = this.gamePositions[y][x].placeHut(hutCount)
+  if (newHutCount != hutCount) {
+    this.hutCount = newHutCount;
     return true;
   }
   if (this.gamePositions[y][x].placeStep(this.stepValue)) {
@@ -90,5 +94,5 @@ Game.prototype.placePiece = function ({ x, y }) {
  * @returns {string} String representing information about the game
  */
 Game.prototype.getInfo = function () {
-  return `Size: ${this.gamePositions.length}, Huts: ${this.memoizedGetHutCount(this.gamePositions)} placed out of ${this.hutLimit}`;
+  return `Size: ${this.gamePositions.length}, Huts: ${this.getHutCount()} placed out of ${this.hutLimit}`;
 };

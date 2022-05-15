@@ -1,9 +1,10 @@
 import BoardPosition from './BoardPosition';
 import { Game } from '../GameLogic/Game';
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import _ from 'lodash';
+import { Empty, AllowedStep } from '../GameLogic/GamePosition';
 
-function Board({size, hutLimit}) {
+function Board({ size, hutLimit }) {
   // layout the css grid according to size, size is always odd, the maximum row and column value is always (size-1)
   // So for a size of 11 the maximum row and colum is 10 and 10, and the minimum row and column is 0, 0.
   const style = {
@@ -24,9 +25,9 @@ function Board({size, hutLimit}) {
     fontSize: '1rem'
   }
 
-  const [game, setGame] = useState(new Game({ size, hutLimit }) );
+  const [game, setGame] = useState(new Game({ size, hutLimit }));
 
-  game.gamePositions[Math.floor((size)/2)][Math.floor((size)/2)].placeHut();
+  game.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
 
   /**
    * Click handler, place the piece if possible
@@ -34,35 +35,51 @@ function Board({size, hutLimit}) {
    * @param {number} arrayIndices.x
    * @param {number} arrayIndices.y
    */
-  function handlePositionClicked({x, y}) {
-    if (game.placePiece({x, y})) {
+  function handlePositionClicked({ x, y }) {
+    if (game.placePiece({ x, y })) {
       const nextGame = _.cloneDeep(game);
       setGame(nextGame);
     }
   }
 
   function handleReset() {
-    const newGame = new Game({ size, hutLimit }) 
-    newGame.gamePositions[Math.floor((size)/2)][Math.floor((size)/2)].placeHut();
+    const newGame = new Game({ size, hutLimit })
+    newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
     setGame(newGame);
   }
+
+  const hutCount = game.getHutCount()
 
   return <div>
     <span style={controlPanelStyle} className="control-panel">
       <button style={resetButtonStyle} onClick={() => handleReset()}>New Game</button>
     </span>
     <div style={style}>
-    {game.gamePositions.map((row, i) =>
-      row.map((square, j) => {
-        return <BoardPosition size = {size} 
-                             pieceValue={square.pieceValue} 
-                             kind={square.kind} 
-                             y={i} 
-                             x={j} key={'' + i * 10 + j} 
-                             handleClick={handlePositionClicked}></BoardPosition>
-      })
-    )
-    }
+      {game.gamePositions.map((row, i, array) =>
+        row.map((square, j) => {
+          const possibleValue = game.memoizedCalculateValue(array[i][j]);
+          let kind = square.kind;
+          if (square.kind === Empty) {
+            if (possibleValue === game.stepValue) {
+              if (hutCount < game.hutLimit) {
+                kind = square.kind
+              }
+              else {
+                kind = AllowedStep
+              }
+            }
+          }
+          return <BoardPosition size={size}
+            pieceValue={square.pieceValue}
+            kind={kind}
+            y={i}
+            x={j}
+            key={'' + i * 10 + j}
+            possibleValue={possibleValue}
+            handleClick={handlePositionClicked}></BoardPosition>
+        })
+      )
+      }
     </div>
   </div>;
 }

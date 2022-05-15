@@ -19,17 +19,16 @@ export function GamePosition({x, y, game}) {
  */
 GamePosition.prototype.placeHut = function (hutCount = 0) {
   if (hutCount < this.game.hutLimit && this.kind === Empty) {
-      this.kind = Hut;
-      this.pieceValue = 1;
-      return true;
+    this.kind = Hut;
+    this.pieceValue = 1;
+    return hutCount + 1;
   }
   else if (hutCount <= this.game.hutLimit && this.kind === Hut) {
     this.kind = Empty;
     this.pieceValue = 0;
-    return true;
+    return hutCount - 1;
   }
-
-  return false;
+  return hutCount;
 };
 
 /**
@@ -61,4 +60,5 @@ GamePosition.prototype.placeStep = function (value) {
 
 export const Empty = 'empty';
 export const Hut = 'hut';
+export const AllowedStep = 'allowedStep'
 const Step = 'step';
