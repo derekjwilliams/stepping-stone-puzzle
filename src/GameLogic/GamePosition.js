@@ -23,7 +23,9 @@ GamePosition.prototype.placeHut = function (hutCount = 0) {
     this.pieceValue = 1;
     return hutCount + 1;
   }
-  else if (hutCount <= this.game.hutLimit && this.kind === Hut) {
+  else if (hutCount <= this.game.hutLimit && 
+           this.kind === Hut &&
+           this.game.memoizedCalculateValue(this) === 0) {
     this.kind = Empty;
     this.pieceValue = 0;
     return hutCount - 1;

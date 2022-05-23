@@ -9,10 +9,11 @@ import memoizeOne from 'memoize-one';
  * @param {number} params.size
  * @param {number} params.hutLimit
  */
-export function Game({ size = 21, hutLimit = 2 }) {
+export function Game({size, hutLimit}) {
   this.hutLimit = hutLimit;
   this.stepValue = 2;
   this.hutCount = 0;
+  this.size = size;
   
   /**
    * Get all neighbor positions on the board, typically 8.  In the case of positions on the edge of the board a null
@@ -23,7 +24,7 @@ export function Game({ size = 21, hutLimit = 2 }) {
    * @private 
    * @returns {array} all Neigbor coordinates on the board in order: top, topright, right, bottomright, bottom, bottomleft, left, topleft; null if not present
   */
-  var getNeighborCoordinates = function (size, x, y) {
+  var getNeighborCoordinates = function (x, y) {
     return [
       y > 0 ? [y - 1, x] : null,
       y > 0 && x < size - 1 ? [y - 1, x + 1] : null,
@@ -51,13 +52,34 @@ export function Game({ size = 21, hutLimit = 2 }) {
  * @returns 
  */
 Game.prototype.calculateValue = function (position) {
-  const coordinates = this.memoizedGetNeighborCoordinates(this.gamePositions.length, position.x, position.y)
+  const coordinates = this.memoizedGetNeighborCoordinates(position.x, position.y)
   return coordinates.filter(value => value != null)
     .map(c => this.gamePositions[c[0]][c[1]].pieceValue)
     .reduce((p, v) => p + v, 0);
 }
 
 Game.prototype.memoizedCalculateValue = memoizeOne(Game.prototype.calculateValue)
+
+Game.prototype.getAvailablePositions = function () {
+  const ss = this.stepValue;
+  const game = this;
+  const v = function (row) {
+    const result = []
+    row.forEach(position => {
+      if (game.memoizedCalculateValue(position) === ss) {
+        result.push(position)
+      }
+    })
+    return result
+  }
+  const result = [];
+  this.gamePositions.forEach((row) => {
+    const foundPositions = v(row, ss)
+    foundPositions.forEach(p => result.push(p))
+  })
+  console.log("Found positions: ", result)
+  return result;
+}
 
 /**
  * @returns {number} Number of positions that have huts

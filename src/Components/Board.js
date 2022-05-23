@@ -3,6 +3,7 @@ import { Game } from '../GameLogic/Game';
 import React, { useState } from 'react';
 import _ from 'lodash';
 import { Empty, AllowedStep } from '../GameLogic/GamePosition';
+import {Dalek} from '../Robot/Dalek'
 
 function Board({ size, hutLimit }) {
   // layout the css grid according to size, size is always odd, the maximum row and column value is always (size-1)
@@ -17,16 +18,31 @@ function Board({ size, hutLimit }) {
     gridTemplateRows: `repeat(${size}, 1fr)`
   };
   const controlPanelStyle = {
-    margin: '10px',
+    margin: '0px',
+  }
+
+  const hutLimitControlStyle = {
+    margin: '10px'
+  }
+  const hutLimitButtonStyle = {
+    marginLeft: '10px',
+    width: '30px',
+    fontFamily: 'Helvetica',
+    fontSize: '1rem'
   }
   const resetButtonStyle = {
     margin: '10px',
     fontFamily: 'Helvetica',
     fontSize: '1rem'
   }
+  const labelStyle = {
+    margin: '10px',
+    fontFamily: 'Helvetica',
+    fontSize: '1rem'
+  }
 
-  const [game, setGame] = useState(new Game({ size, hutLimit }));
-
+  const [startHutCount, setStartHutCount] = useState(hutLimit);
+  const [game, setGame] = useState(new Game({size, hutLimit: startHutCount}));
   game.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
 
   /**
@@ -43,9 +59,38 @@ function Board({ size, hutLimit }) {
   }
 
   function handleReset() {
-    const newGame = new Game({ size, hutLimit })
+    const newGame = new Game({size, hutLimit: startHutCount})
     newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
     setGame(newGame);
+  }
+
+
+  function handleAutoplay() {
+    const dalek = new Dalek(game)
+    const g = dalek.play()
+    console.log(g)
+    const nextGame = _.cloneDeep(g);
+    setGame(nextGame);
+    
+    // const newGame = new Game({size, hutLimit: startHutCount})
+    // newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
+    // setGame(newGame);
+  }
+
+  function handleIncrement() {
+    setStartHutCount(startHutCount + 1)
+    const newGame = new Game({ size, hutLimit: startHutCount + 1 })
+    newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
+    setGame(newGame);
+  }
+
+  function handleDecrement() {
+    if (startHutCount >= 3) {
+      setStartHutCount(startHutCount - 1)
+      const newGame = new Game({ size, hutLimit: startHutCount - 1 })
+      newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
+      setGame(newGame);
+    }
   }
 
   const hutCount = game.getHutCount()
@@ -54,13 +99,27 @@ function Board({ size, hutLimit }) {
     <span style={controlPanelStyle} className="control-panel">
       <button style={resetButtonStyle} onClick={() => handleReset()}>New Game</button>
     </span>
+    <span style={controlPanelStyle} className="control-panel">
+      <button style={resetButtonStyle} onClick={() => handleAutoplay()}>Autoplay</button>
+    </span>
+    <span style={hutLimitControlStyle}>
+      <span style={labelStyle}>Number of Initial Huts: </span>
+      <span>{startHutCount}</span>
+      <span>
+        <button style={hutLimitButtonStyle} onClick={() => handleDecrement()}>-</button>
+      </span>
+      <span>
+        <button style={hutLimitButtonStyle} onClick={() => handleIncrement()}>+</button>
+      </span>
+      <span style={labelStyle}>Huts Placed: {game.getHutCount()}</span>
+    </span>
+
     <div style={style}>
       {game.gamePositions.map((row, i, array) =>
         row.map((square, j) => {
-          const possibleValue = game.memoizedCalculateValue(array[i][j]);
           let kind = square.kind;
           if (square.kind === Empty) {
-            if (possibleValue === game.stepValue) {
+            if (game.memoizedCalculateValue(array[i][j]) === game.stepValue) {
               if (hutCount < game.hutLimit) {
                 kind = square.kind
               }
@@ -75,7 +134,7 @@ function Board({ size, hutLimit }) {
             y={i}
             x={j}
             key={'' + i * 10 + j}
-            possibleValue={possibleValue}
+            possibleValue={game.stepValue}
             handleClick={handlePositionClicked}></BoardPosition>
         })
       )
