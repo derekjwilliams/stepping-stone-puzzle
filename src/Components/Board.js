@@ -64,17 +64,12 @@ function Board({ size, hutLimit }) {
     setGame(newGame);
   }
 
-
   function handleAutoplay() {
     const dalek = new Dalek(game)
-    const g = dalek.play()
+    const g = dalek.start()
     console.log(g)
     const nextGame = _.cloneDeep(g);
     setGame(nextGame);
-    
-    // const newGame = new Game({size, hutLimit: startHutCount})
-    // newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
-    // setGame(newGame);
   }
 
   function handleIncrement() {

@@ -1,4 +1,4 @@
-import { GamePosition, Hut } from "./GamePosition";
+import { GamePosition, Hut, Empty } from "./GamePosition";
 import memoizeOne from 'memoize-one';
 
 /**
@@ -66,7 +66,7 @@ Game.prototype.getAvailablePositions = function () {
   const v = function (row) {
     const result = []
     row.forEach(position => {
-      if (game.memoizedCalculateValue(position) === ss) {
+      if (game.memoizedCalculateValue(position) === ss && position.kind === Empty) {
         result.push(position)
       }
     })
