@@ -43,7 +43,7 @@ function Board({ size, hutLimit }) {
 
   const [startHutCount, setStartHutCount] = useState(hutLimit);
   const [game, setGame] = useState(new Game({size, hutLimit: startHutCount}));
-  game.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
+  game.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeOrRemoveHut();
 
   /**
    * Click handler, place the piece if possible
@@ -52,7 +52,7 @@ function Board({ size, hutLimit }) {
    * @param {number} arrayIndices.y
    */
   function handlePositionClicked({ x, y }) {
-    if (game.placePiece({ x, y })) {
+    if (game.placeOrRemovePiece({ x, y })) {
       const nextGame = _.cloneDeep(game);
       setGame(nextGame);
     }
@@ -60,22 +60,31 @@ function Board({ size, hutLimit }) {
 
   function handleReset() {
     const newGame = new Game({size, hutLimit: startHutCount})
-    newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
+    newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeOrRemoveHut();
     setGame(newGame);
   }
 
   function handleAutoplay() {
-    const dalek = new Dalek(game)
-    const g = dalek.start()
-    console.log(g)
+
+    const dalek = new Dalek(game);
+    const g = dalek.start();
+    console.log(g);
     const nextGame = _.cloneDeep(g);
     setGame(nextGame);
   }
 
+  // function handleAutoplay() {
+  //   const dalek = new Dalek(game)
+  //   const g = dalek.play()
+  //   console.log(g)
+  //   const nextGame = _.cloneDeep(g);
+  //   setGame(nextGame);
+  // }
+
   function handleIncrement() {
     setStartHutCount(startHutCount + 1)
     const newGame = new Game({ size, hutLimit: startHutCount + 1 })
-    newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
+    newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].this.hutLimitReached();
     setGame(newGame);
   }
 
@@ -83,7 +92,7 @@ function Board({ size, hutLimit }) {
     if (startHutCount >= 3) {
       setStartHutCount(startHutCount - 1)
       const newGame = new Game({ size, hutLimit: startHutCount - 1 })
-      newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeHut();
+      newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].hutLimitReached();
       setGame(newGame);
     }
   }
@@ -115,12 +124,7 @@ function Board({ size, hutLimit }) {
           let kind = square.kind;
           if (square.kind === Empty) {
             if (game.memoizedCalculateValue(array[i][j]) === game.stepValue) {
-              if (hutCount < game.hutLimit) {
-                kind = square.kind
-              }
-              else {
                 kind = AllowedStep
-              }
             }
           }
           return <BoardPosition size={size}

@@ -1,3 +1,4 @@
+import { Game } from "../GameLogic/Game"
 /**
  * Represents a Game Position in an infinite stepping stone game, @see {@link https://www.youtube.com/watch?v=m4Uth-EaTZ8}
  * @param {object} params
@@ -17,20 +18,19 @@ export function GamePosition({x, y, game}) {
  * place a Hut if possible, if this is already a hut then remove it
  * @returns {boolean} true if hut was placed
  */
-GamePosition.prototype.placeHut = function (hutCount = 0) {
+GamePosition.prototype.placeOrRemoveHut = function () {
+  const hutCount = this.game.getHutCount()
   if (hutCount < this.game.hutLimit && this.kind === Empty) {
     this.kind = Hut;
     this.pieceValue = 1;
     return hutCount + 1;
   }
-  else if (hutCount <= this.game.hutLimit && 
-           this.kind === Hut &&
+  else if (this.kind === Hut &&
+           this.game.stepNeighbors(this).length === 0 ||
            this.game.memoizedCalculateValue(this) === 0) {
     this.kind = Empty;
     this.pieceValue = 0;
-    return hutCount - 1;
   }
-  return hutCount;
 };
 
 /**
@@ -63,4 +63,4 @@ GamePosition.prototype.placeStep = function (value) {
 export const Empty = 'empty';
 export const Hut = 'hut';
 export const AllowedStep = 'allowedStep'
-const Step = 'step';
+export const Step = 'step';

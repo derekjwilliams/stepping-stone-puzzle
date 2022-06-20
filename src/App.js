@@ -4,7 +4,7 @@ import Board from './Components/Board';
 function App() {
   return (
     <div className="App">
-      <Board size={9} hutLimit={2}></Board>
+      <Board size={11} hutLimit={2}></Board>
     </div>
   );
 }
