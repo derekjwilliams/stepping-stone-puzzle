@@ -1,11 +1,11 @@
 import BoardPosition from './BoardPosition';
-import { Game } from '../GameLogic/Game';
+import { Game } from '../GameLogic/Game.js';
 import React, { useState } from 'react';
 import _ from 'lodash';
-import { Empty, AllowedStep } from '../GameLogic/GamePosition';
+import { Empty, AllowedStep, Hut } from '../GameLogic/GamePosition';
 import {Dalek} from '../Robot/Dalek'
 
-function Board({ size, hutLimit }) {
+function Board({ size, hutLimit}) {
   // layout the css grid according to size, size is always odd, the maximum row and column value is always (size-1)
   // So for a size of 11 the maximum row and colum is 10 and 10, and the minimum row and column is 0, 0.
   const style = {
@@ -42,8 +42,10 @@ function Board({ size, hutLimit }) {
   }
 
   const [startHutCount, setStartHutCount] = useState(hutLimit);
-  const [game, setGame] = useState(new Game({size, hutLimit: startHutCount}));
-  game.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeOrRemoveHut();
+  const [game, setGame] = useState(new Game({size: 11, hutLimit: 2}));
+  
+  //const [gamePositions, setGamePositions] = useState(game.gamePositions);
+  //game.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeOrRemoveHut();
 
   /**
    * Click handler, place the piece if possible
@@ -52,10 +54,10 @@ function Board({ size, hutLimit }) {
    * @param {number} arrayIndices.y
    */
   function handlePositionClicked({ x, y }) {
-    if (game.placeOrRemovePiece({ x, y })) {
-      const nextGame = _.cloneDeep(game);
-      setGame(nextGame);
-    }
+    game.placeOrRemovePiece({ x, y })
+      const newgame = _.cloneDeep(game)
+      setGame(newgame);
+    
   }
 
   function handleReset() {
@@ -73,18 +75,10 @@ function Board({ size, hutLimit }) {
     setGame(nextGame);
   }
 
-  // function handleAutoplay() {
-  //   const dalek = new Dalek(game)
-  //   const g = dalek.play()
-  //   console.log(g)
-  //   const nextGame = _.cloneDeep(g);
-  //   setGame(nextGame);
-  // }
-
   function handleIncrement() {
     setStartHutCount(startHutCount + 1)
     const newGame = new Game({ size, hutLimit: startHutCount + 1 })
-    newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].this.hutLimitReached();
+    // newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].this.hutLimitReached();
     setGame(newGame);
   }
 
@@ -92,12 +86,11 @@ function Board({ size, hutLimit }) {
     if (startHutCount >= 3) {
       setStartHutCount(startHutCount - 1)
       const newGame = new Game({ size, hutLimit: startHutCount - 1 })
-      newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].hutLimitReached();
+      // newGame.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].hutLimitReached();
       setGame(newGame);
     }
   }
-
-  const hutCount = game.getHutCount()
+  const hutCount = game.gamePositions.flat().filter(p => p.kind === Hut).length
 
   return <div>
     <span style={controlPanelStyle} className="control-panel">
@@ -115,7 +108,7 @@ function Board({ size, hutLimit }) {
       <span>
         <button style={hutLimitButtonStyle} onClick={() => handleIncrement()}>+</button>
       </span>
-      <span style={labelStyle}>Huts Placed: {game.getHutCount()}</span>
+      <span style={labelStyle}>Huts Placed: {hutCount}</span>
     </span>
 
     <div style={style}>
@@ -123,7 +116,7 @@ function Board({ size, hutLimit }) {
         row.map((square, j) => {
           let kind = square.kind;
           if (square.kind === Empty) {
-            if (game.memoizedCalculateValue(array[i][j]) === game.stepValue) {
+            if (game.calculateValue(array[i][j]) === game.stepValue) {
                 kind = AllowedStep
             }
           }
@@ -133,8 +126,7 @@ function Board({ size, hutLimit }) {
             y={i}
             x={j}
             key={'' + i * 10 + j}
-            possibleValue={game.stepValue}
-            handleClick={handlePositionClicked}></BoardPosition>
+            handleClick={handlePositionClicked} />
         })
       )
       }

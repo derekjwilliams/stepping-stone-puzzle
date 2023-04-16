@@ -24,7 +24,6 @@ export function Dalek(game) {
     const hutLimit = game.hutLimit
     const width = game.size
     const height = game.size
-    // debugger
     game.placeOrRemovePiece({x: 1, y: 1})
     console.log(width)
 
@@ -37,7 +36,6 @@ export function Dalek(game) {
     const availablePositions = game.getAvailablePositions();
     if (availablePositions.length > 0) {
       for (let i = startIndex; i < availablePositions.length; i++) {
-        debugger
         game.placeOrRemovePiece(availablePositions[i]);
         const { result } = this.play(i); // recursive, TODO a graph of possible huts with available positions would be "cheaper" than saving an entire grid
         return { result, lastPosition: availablePositions[i] };

@@ -1,5 +1,5 @@
-import { GamePosition, Hut, Empty, Step } from "./GamePosition";
-import memoizeOne from 'memoize-one';
+import { GamePosition, Hut, Empty, Step } from "./GamePosition.js";
+import memoize from 'fast-memoize';
 
 /**
  *
@@ -9,12 +9,18 @@ import memoizeOne from 'memoize-one';
  * @param {number} params.size
  * @param {number} params.hutLimit
  */
-export function Game({size, hutLimit}) {
+export function Game({ size, hutLimit }) {
   this.hutLimit = hutLimit;
   this.stepValue = 2;
-  // this.hutLimitReached = false;
   this.size = size;
-  
+  this.gamePositions = [...new Array(size)].map(() => [...new Array(size)]).map((row, i) =>
+    row.map((_, j) =>
+      (new GamePosition({ x: j, y: i, game: this }))
+    )
+  );
+}
+
+Game.prototype = {
   /**
    * Get all neighbor positions on the board, typically 8.  In the case of positions on the edge of the board a null
    * is returned for that position, because there are no positions beyoud the edge of the board
@@ -24,7 +30,7 @@ export function Game({size, hutLimit}) {
    * @private 
    * @returns {array} all Neigbor coordinates on the board in order: top, topright, right, bottomright, bottom, bottomleft, left, topleft; null if not present
   */
-  var getNeighborCoordinates = function (x, y) {
+  getNeighborCoordinates: function (x, y, size) {
     return [
       y > 0 ? [y - 1, x] : null,
       y > 0 && x < size - 1 ? [y - 1, x + 1] : null,
@@ -34,144 +40,81 @@ export function Game({size, hutLimit}) {
       y < size - 1 && x > 0 ? [y + 1, x - 1] : null,
       x > 0 ? [y, x - 1] : null,
       y > 0 && x > 0 ? [y - 1, x - 1] : null]
-  }
+  },
+  /**
+   * @returns {number} Number of positions that have huts
+   */
+  getHutCount: function () {
+    const result = this.gamePositions.flat().filter(p => p.kind === Hut).length
+    return result;
+  },
 
-  this.memoizedGetNeighborCoordinates = memoizeOne(getNeighborCoordinates)
+  /**
+   * Place the piece if possible, returns false if a piece cannot be placed, the type of piece if it can be placed
+   * @param {object} params
+   * @param {number} params.x x coordinate
+   * @param {number} params.y y coordinate
+   * @returns {void}
+   */
+  placeOrRemovePiece: function ({ x, y }) {
+    const hutCount = this.getHutCount();
+    const newHutCount = this.gamePositions[y][x].placeOrRemoveHut(hutCount)
+    if (newHutCount != hutCount) {
+      return;
+    }
+    this.gamePositions[y][x].placeStep(this.stepValue)
+  },
+  /**
+   * Get the sum of all of the neighbor's piece values
+   * @param {GamePosition} position of row and column game position pairs
+   * @returns 
+   */
+  calculateValue: function (position) {
+    const coordinates = this.getNeighborCoordinates(position.x, position.y, this.size)
+    const positions = coordinates.filter(value => value != null)
+      // @ts-ignore
+      .map(c => this.gamePositions[c[0]][c[1]])
 
-  // This creates a 2d array
-  this.gamePositions = [...new Array(size)].map(() => [...new Array(size)]).map((row, i) =>
-    row.map((_, j) =>
-      (new GamePosition({ x: j, y: i, game: this }))
-    )
-  );
-}
+    const validPositions = positions.filter(position => true)
+    const values = validPositions.map(validPosition => validPosition.pieceValue)
+    return values.reduce((p, v) => p + v, 0)
+  },
+  /**
+   * Get the sum of all of the neighbor's piece values
+   * @param {Array<GamePosition>} array of row and column game position pairs
+   * @returns 
+   */
+  stepNeighbors: memoize(function (position) {
+    const coordinates = this.getNeighborCoordinates(position.x, position.y, this.size)
 
-/**
- * Get the sum of all of the neighbor's piece values
- * @param {Array} array of row and column game position pairs
- * @returns 
- */
- Game.prototype.stepNeighbors = function (position) {
-  const coordinates = this.memoizedGetNeighborCoordinates(position.x, position.y)
-
-  const positions = coordinates.filter(value => value != null)
-  .map(c => this.gamePositions[c[0]][c[1]])
-
-  // debugger
-  const postionsThatAreSteps = positions.filter(position => position.kind === Step)
-
-  return postionsThatAreSteps
-
-
-  // return coordinates.filter(value => value != null)
-  //   .map(c => this.gamePositions[c[0]][c[1]])
-  //   .filter(position => position.kind === Step)
-  //   .map(y => y.pieceValue)
-  //   .reduce((p, v) => p + v, 0);
-}
-
-/**
- * Get the sum of all of the neighbor's piece values
- * @param {Array} array of row and column game position pairs
- * @returns 
- */
-Game.prototype.calculateValue = function (position) {
-  const coordinates = this.memoizedGetNeighborCoordinates(position.x, position.y)
-
-  const positions = coordinates.filter(value => value != null)
-  .map(c => this.gamePositions[c[0]][c[1]])
-
-  // debugger
-  const validPositions = positions.filter(position => true)
-
-  const values = validPositions.map(validPosition => validPosition.pieceValue)
-
-  const result = values.reduce((p, v) => p + v, 0);
-
-  return result
-
-  // return coordinates.filter(value => value != null)
-  //   .map(c => this.gamePositions[c[0]][c[1]])
-  //   .filter(position => position.kind === Step)
-  //   .map(y => y.pieceValue)
-  //   .reduce((p, v) => p + v, 0);
-}
-
-Game.prototype.memoizedCalculateValue = memoizeOne(Game.prototype.calculateValue)
-
-Game.prototype.getAvailablePositions = function () {
-  const ss = this.stepValue;
-  const game = this;
-  const v = function (row) {
-    const result = []
-    row.forEach(position => {
-      if (game.calculateValue(position) === ss && position.kind === Empty) {
-        result.push(position)
-      }
+    const positions = coordinates.filter(value => value != null)
+      // @ts-ignore
+      .map(c => this.gamePositions[c[0]][c[1]])
+    const postionsThatAreSteps = positions.filter(position => position.kind === Step)
+    return postionsThatAreSteps
+  }),
+  /**
+   * @returns {Array<GamePosition>} array of available game positions
+   */
+  getAvailablePositions: function () {
+    const ss = this.stepValue;
+    const game = this;
+    const v = function (row) {
+      const result = []
+      row.forEach(position => {
+        if (game.calculateValue(position) === ss && position.kind === Empty) {
+          result.push(position)
+        }
+      })
+      return result
+    }
+    const result = [];
+    this.gamePositions.forEach((row) => {
+      const foundPositions = v(row)
+      foundPositions.forEach(p => result.push(p))
     })
-    return result
+    console.log("Found positions: ", result)
+    return result;
   }
-  const result = [];
-  this.gamePositions.forEach((row) => {
-    const foundPositions = v(row, ss)
-    foundPositions.forEach(p => result.push(p))
-  })
-  console.log("Found positions: ", result)
-  return result;
 }
-
-/**
- * @returns {number} Number of positions that have huts
- */
-Game.prototype.getHutCount = function () {
-  // if (this.hutLimitReached) {
-  //   return this.hutLimit
-  // }
-  return this.gamePositions.flat().filter(p => p.kind === Hut).length
-}
-
-/**
- * Place a hut
- * @param {object} params
- * @param {number} params.x x coordinate
- * @param {number} params.y y coordinate
- * @returns {(boolean|string)}
- */
- Game.prototype.placeHut = function ({ x, y }) {
-  const hutCount = this.getHutCount();
-  
-  this.gamePositions[y][x].placeOrRemoveHut(hutCount)
-  const newHutCount = this.getHutCount();
-  if (newHutCount != hutCount) {
-    return true;
-  }
-  return false;
-}
-
-/**
- * Place the piece if possible, returns false if a piece cannot be placed, the type of piece if it can be placed
- * @param {object} params
- * @param {number} params.x x coordinate
- * @param {number} params.y y coordinate
- * @returns {(boolean|string)}
- */
-Game.prototype.placeOrRemovePiece = function ({ x, y }) {
-  const hutCount = this.getHutCount();
-  
-  this.gamePositions[y][x].placeOrRemoveHut()
-  const newHutCount = this.getHutCount()
-  if (newHutCount != hutCount) {
-    return true;
-  }
-  if (this.gamePositions[y][x].placeStep(this.stepValue)) {
-    return true;
-  }
-  return false;
-}
-
-/**
- * @returns {string} String representing information about the game
- */
-Game.prototype.getInfo = function () {
-  return `Size: ${this.gamePositions.length}, Huts: ${this.getHutCount()} placed out of ${this.hutLimit}`;
-};
+export default Game;
