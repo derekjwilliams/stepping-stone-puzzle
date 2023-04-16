@@ -4,7 +4,7 @@ import React from 'react';
 function App() {
   return (
     <div className="App">
-      <Board size={15} hutLimit={2}></Board>
+      <Board size={13} hutLimit={2}></Board>
     </div>
   );
 }

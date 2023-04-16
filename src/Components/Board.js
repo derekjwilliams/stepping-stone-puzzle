@@ -42,7 +42,7 @@ function Board({ size, hutLimit}) {
   }
 
   const [startHutCount, setStartHutCount] = useState(hutLimit);
-  const [game, setGame] = useState(new Game({size: 11, hutLimit: 2}));
+  const [game, setGame] = useState(new Game({size, hutLimit: 2}));
   
   //const [gamePositions, setGamePositions] = useState(game.gamePositions);
   //game.gamePositions[Math.floor((size) / 2)][Math.floor((size) / 2)].placeOrRemoveHut();
